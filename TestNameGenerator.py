@@ -53,12 +53,14 @@ class ConvertTestNameCommand(sublime_plugin.TextCommand):
 
                 if existingMethod == False:
                     SublimeConnect.insertMethodName(edit, cursorLine, TextHelper.prepareTestBlockPHP(phrase, methodName))
+                    TextHelper.closingSnippet(self.view)
                 else:
                     SublimeConnect.updateMethodNamePHP(edit, cursorLine, methodName, existingMethod)
 
             else:
                 # JS will add a new test method because the text is inside the test method
                 SublimeConnect.insertMethodName(edit, cursorLine, TextHelper.prepareTestBlockJS(phrase))
+                TextHelper.closingSnippet(self.view)
 
 class TextHelper():
     def patternExistingMethodPHP(lineContents):
@@ -73,7 +75,11 @@ class TextHelper():
 
     def prepareTestBlockPHP(phrase, methodName):
         tab = SublimeConnect.getWhitespaceTab()
-        return tab + "/**\n" + tab + " * " + phrase + "\n" + tab + " */\n" + tab + "public function test" + methodName + "()\n" + tab + "{\n\n" + tab + "}\n\n" + tab
+        return tab + "/**\n" + tab + " * " + phrase + "\n" + tab + " */\n" + tab + "public function test" + methodName + "()"
+
+    def closingSnippet(view):
+        view.run_command("insert_snippet", {"contents": "\n\{\n\t$5\n\}"})
+
 
     # will generate Jasmine blocks
     def prepareTestBlockJS(phrase):
